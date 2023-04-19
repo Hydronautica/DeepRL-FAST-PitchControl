@@ -1,23 +1,15 @@
-function [trainingInfo,agent] = trainAgent2Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+function [trainingInfo,agent] = trainAgent3Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps)
 Cpitch = Cpitch ;
 Cmoment = Cmoment ;
 nObsStates = 4;
 obsInfo = rlNumericSpec([nObsStates 1]) ;
 MaxMoment = 100000 ;
-Cpitch = 1 ;
-Cmoment = 2.5 ;
 nActStates = 3 ; % 3 Mooring Lines (3 change in lengths)
 actInfo = rlNumericSpec([nActStates 1],"UpperLimit",1,"LowerLimit",-1);
-env = rlSimulinkEnv("OpenFast/FAST_RL_Env", "OpenFast/FAST_RL_Env/controller",obsInfo,actInfo) ;
+env = rlSimulinkEnv("FAST_RL_Env", "FAST_RL_Env/controller",obsInfo,actInfo) ;
 env.UseFastRestart = 'off' ;
-actnet = [featureInputLayer(nObsStates,"Name","obs"),fullyConnectedLayer(Neurons,"Name",'fc1'),reluLayer("Name",'relu1'),fullyConnectedLayer(Neurons,"Name",'fc2'),reluLayer("Name",'relu2'),fullyConnectedLayer(Neurons,"Name",'fc3'),reluLayer("Name",'relu3'),fullyConnectedLayer(nActStates,"Name","act"),tanhLayer("Name","tanh"),scalingLayer("Name","scact",Scale=max(actInfo.UpperLimit))] ;
-actorOpts = rlOptimizerOptions('LearnRate',LearnRate);
+actnet = [featureInputLayer(nObsStates,"Name","obs"),fullyConnectedLayer(Neurons,"Name",'fc1'),reluLayer("Name",'relu1'),fullyConnectedLayer(Neurons,"Name",'fc2'),reluLayer("Name",'relu2'),fullyConnectedLayer(nActStates,"Name","act"),tanhLayer("Name","tanh"),scalingLayer("Name","scact",Scale=max(actInfo.UpperLimit))] ;
 actor = rlDeterministicActorRepresentation(actnet,obsInfo,actInfo,"Observation",'obs','Action','scact') ;
-obsPath = [featureInputLayer(nObsStates,"Name","obs"),fullyConnectedLayer(Neurons,"Name",'fc1'),reluLayer("Name",'relu1'),fullyConnectedLayer(Neurons,"Name",'fc2'),additionLayer(nActStates,"Name","add"),reluLayer("Name",'relu2'),fullyConnectedLayer(Neurons,"Name",'fc3'),reluLayer("Name",'relu3'),fullyConnectedLayer(1,"Name","value")];
-actPath = [featureInputLayer(nActStates,"Normalization","none","Name","act")
-    fullyConnectedLayer(Neurons,"Name","fcact")] ;
 statePath = [
     featureInputLayer( ...
         obsInfo.Dimension(1), ...
@@ -53,6 +45,10 @@ commonPath = [
     reluLayer
     fullyConnectedLayer(Neurons)
     reluLayer
+    fullyConnectedLayer(Neurons)
+    reluLayer
+    fullyConnectedLayer(Neurons)
+    reluLayer
     fullyConnectedLayer(1)
     ];
 
@@ -77,8 +73,6 @@ agentOpts = rlDDPGAgentOptions(...
                 'NumStepsToLookAhead',NumStepsAhead,...
                 'DiscountFactor',DiscountFactor);
 agent = rlDDPGAgent(actor,critic,agentOpts) ;
-FAST_InputFileName = 'OpenFAST/5MW_OC4Semi_WSt_WavesWN.fst';
-TMax               = 500; % seconds
 trainOpts = rlTrainingOptions(...
     'MaxEpisodes',MaxEpisodes,...
     'MaxStepsPerEpisode',MaxSteps,...

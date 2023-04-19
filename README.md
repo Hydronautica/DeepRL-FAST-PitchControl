@@ -1,2 +1,2 @@
 # DeepRL-FAST-PitchControl
-Deep reinforcement learning algorithm for mitigate loads on a floating wind turbine in extreme storms
+Deep reinforcement learning algorithm for mitigating loads on a floating wind turbine in extreme storms. Current method minimizes tower base moments

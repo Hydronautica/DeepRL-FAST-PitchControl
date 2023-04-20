@@ -12,7 +12,7 @@ TMax               = 500; % seconds
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 Neurons            = 64 ;      % Number of neurons per layer
-batchsize          = 128 ;     % Batch size
+batchsize          = 64 ;     % Batch size
 learningRate       = 0.005 ;   % Learning rate of both actor and critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
@@ -29,7 +29,7 @@ MaxMoment          = 100000 ;  % Moment to normalize observations by
 %  each step with a discount factor of 0.99. Hyperparameter search involves
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-Neurons            = 128 ;     % Number of neurons per layer
+Neurons            = 64 ;     % Number of neurons per layer
 batchsize          = 128 ;     % Batch size
 learningRate       = 0.005 ;   % Learning rate of both actor and critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
@@ -47,8 +47,8 @@ MaxMoment          = 100000 ;  % Moment to normalize observations by
 %  each step with a discount factor of 0.99. Hyperparameter search involves
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-Neurons            = 256 ;     % Number of neurons per layer
-batchsize          = 128 ;     % Batch size
+Neurons            = 64 ;     % Number of neurons per layer
+batchsize          = 256 ;     % Batch size
 learningRate       = 0.005 ;   % Learning rate of both actor and critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
@@ -65,8 +65,8 @@ MaxMoment          = 100000 ;  % Moment to normalize observations by
 %  each step with a discount factor of 0.99. Hyperparameter search involves
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-Neurons            = 64 ;     % Number of neurons per layer
-batchsize          = 128 ;     % Batch size
+Neurons            = 128 ;     % Number of neurons per layer
+batchsize          = 64 ;     % Batch size
 learningRate       = 0.005 ;   % Learning rate of both actor and critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
@@ -101,8 +101,8 @@ MaxMoment          = 100000 ;  % Moment to normalize observations by
 %  each step with a discount factor of 0.99. Hyperparameter search involves
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-Neurons            = 256 ;     % Number of neurons per layer
-batchsize          = 128 ;     % Batch size
+Neurons            = 128 ;     % Number of neurons per layer
+batchsize          = 256 ;     % Batch size
 learningRate       = 0.005 ;   % Learning rate of both actor and critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
@@ -145,7 +145,7 @@ title('Average Reward')
 ylabel('Average Reward')
 
 axis([0 500 -1800 -700])
-legend '64N-2HL' '128N-2HL' '256N-2HL' '64N-3HL' '128N-3HL' '256N-3HL'
+legend '64N2H-64' '64N2H-128' '64N2H-256' '128N3H-64' '128N3H-128' '128N3H-256'
 subplot(2,1,2)
 plot(Ep,-Loss1,Ep,-Loss2,Ep,-Loss3,Ep,-Loss4,Ep,-Loss5,Ep,-Loss6)
 grid on

@@ -153,7 +153,7 @@ title('Critic Loss')
 ylabel('Loss')
 xlabel('Episode Number')
 axis([0 500 500 1500])
-sgtitle('Neuron and Layer Hyperparameter Search')
+sgtitle('Minibatch Hyperparameter Search')
 
 
 

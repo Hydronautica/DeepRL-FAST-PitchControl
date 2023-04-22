@@ -13,7 +13,8 @@ TMax               = 500; % seconds
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 Neurons            = 64 ;      % Number of neurons per layer
 batchsize          = 128 ;     % Batch size
-learningRate       = 0.005 ;   % Learning rate of both actor and critic
+learningRateActor       = 0.005 ;   % Learning rate of actor 
+learningRateCritic       = 0.005 ;   % Learning rate of critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
@@ -22,7 +23,7 @@ DiscountFactor     = 0.99 ;    % Specify importance of future estimates of rewar
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_1, agent_1] = trainAgent3Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_1, agent_1] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Second training involves 128 neurons per layer with 2 hidden layers in each the actor and critic, learning rate of 0.005
 %  pitch and moment coefficients of 0.5 and 2.5 respectively, a sample time
 %  of 0.1 seconds, agent is looking 50 steps ahead to maximize reward at
@@ -31,7 +32,8 @@ MaxMoment          = 100000 ;  % Moment to normalize observations by
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 Neurons            = 128 ;     % Number of neurons per layer
 batchsize          = 128 ;     % Batch size
-learningRate       = 0.005 ;   % Learning rate of both actor and critic
+learningRateActor       = 0.005 ;   % Learning rate of actor
+learningRateCritic       = 0.005 ;   % Learning rate of critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
@@ -40,7 +42,7 @@ DiscountFactor     = 0.99 ;    % Specify importance of future estimates of rewar
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_2, agent_2] = trainAgent2Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_2, agent_2] = trainAgent2Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Third training involves 256 neurons per layer with 2 hidden layers in each the actor and critic, learning rate of 0.005
 %  pitch and moment coefficients of 0.5 and 2.5 respectively, a sample time
 %  of 0.1 seconds, agent is looking 50 steps ahead to maximize reward at
@@ -49,7 +51,8 @@ MaxMoment          = 100000 ;  % Moment to normalize observations by
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 Neurons            = 256 ;     % Number of neurons per layer
 batchsize          = 128 ;     % Batch size
-learningRate       = 0.005 ;   % Learning rate of both actor and critic
+learningRateActor       = 0.005 ;   % Learning rate of actor
+learningRateCritic       = 0.005 ;   % Learning rate of critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
@@ -58,7 +61,7 @@ DiscountFactor     = 0.99 ;    % Specify importance of future estimates of rewar
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_3, agent_3] = trainAgent2Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_3, agent_3] = trainAgent2Hidden(Neurons,batchsize,learningRateActor,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Fourth training involves 64 neurons per layer with 3 hidden layers in each the actor and critic, learning rate of 0.005
 %  pitch and moment coefficients of 0.5 and 2.5 respectively, a sample time
 %  of 0.1 seconds, agent is looking 50 steps ahead to maximize reward at
@@ -67,7 +70,8 @@ MaxMoment          = 100000 ;  % Moment to normalize observations by
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 Neurons            = 64 ;     % Number of neurons per layer
 batchsize          = 128 ;     % Batch size
-learningRate       = 0.005 ;   % Learning rate of both actor and critic
+learningRateActor       = 0.005 ;   % Learning rate of actor 
+learningRateCritic       = 0.005 ;   % Learning rate of critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
@@ -76,7 +80,7 @@ DiscountFactor     = 0.99 ;    % Specify importance of future estimates of rewar
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_4, agent_4] = trainAgent3Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_4, agent_4] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Fifth training involves 128 neurons per layer with 3 hidden layers in each the actor and critic, learning rate of 0.005
 %  pitch and moment coefficients of 0.5 and 2.5 respectively, a sample time
 %  of 0.1 seconds, agent is looking 50 steps ahead to maximize reward at
@@ -85,7 +89,8 @@ MaxMoment          = 100000 ;  % Moment to normalize observations by
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 Neurons            = 128 ;     % Number of neurons per layer
 batchsize          = 128 ;     % Batch size
-learningRate       = 0.005 ;   % Learning rate of both actor and critic
+learningRateActor       = 0.005 ;   % Learning rate of actor 
+learningRateCritic       = 0.005 ;   % Learning rate of critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
@@ -94,7 +99,7 @@ DiscountFactor     = 0.99 ;    % Specify importance of future estimates of rewar
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_5, agent_5] = trainAgent3Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_5, agent_5] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Sixth training involves 256 neurons per layer with 3 hidden layers in each the actor and critic, learning rate of 0.005
 %  pitch and moment coefficients of 0.5 and 2.5 respectively, a sample time
 %  of 0.1 seconds, agent is looking 50 steps ahead to maximize reward at
@@ -103,7 +108,8 @@ MaxMoment          = 100000 ;  % Moment to normalize observations by
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 Neurons            = 256 ;     % Number of neurons per layer
 batchsize          = 128 ;     % Batch size
-learningRate       = 0.005 ;   % Learning rate of both actor and critic
+learningRateActor       = 0.005 ;   % Learning rate of actor 
+learningRateCritic       = 0.005 ;   % Learning rate of critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
@@ -112,7 +118,7 @@ DiscountFactor     = 0.99 ;    % Specify importance of future estimates of rewar
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_6, agent_6] = trainAgent3Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_6, agent_6] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Plot results
 Ep        = trainingInfo_1.EpisodeIndex ;
 % Average Rewards

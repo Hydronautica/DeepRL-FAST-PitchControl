@@ -11,114 +11,113 @@ TMax               = 500; % seconds
 %  each step with a discount factor of 0.99. Hyperparameter search involves
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-Neurons            = 64 ;      % Number of neurons per layer
-batchsize          = 64 ;     % Batch size
-learningRateActor       = 0.005 ;   % Learning rate of actor 
-learningRateCritic       = 0.005 ;   % Learning rate of critic
-Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
+Neurons            = 128 ;      % Number of neurons per layer
+batchsize          = 128 ;     % Batch size
+learningRateActor       = 0.001 ;   % Learning rate of actor 
+learningRateCritic       = 0.01 ;   % Learning rate of criticCpitch           
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
-NumStepsAhead      = 50 ;      % Steps to look into future to predict reward
+NumStepsAhead      = 2 ;      % Steps to look into future to predict reward
 DiscountFactor     = 0.99 ;    % Specify importance of future estimates of reward (decay rate)
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_1, agent_1] = trainAgent3Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_1, agent_1] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Second training involves 128 neurons per layer with 2 hidden layers in each the actor and critic, learning rate of 0.005
 %  pitch and moment coefficients of 0.5 and 2.5 respectively, a sample time
 %  of 0.1 seconds, agent is looking 50 steps ahead to maximize reward at
 %  each step with a discount factor of 0.99. Hyperparameter search involves
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-Neurons            = 64 ;     % Number of neurons per layer
-batchsize          = 128 ;     % Batch size
-learningRateActor       = 0.005 ;   % Learning rate of actor 
-learningRateCritic       = 0.005 ;   % Learning rate of critic
+Neurons            = 128 ;      % Number of neurons per layer
+batchsize          = 128 ;     % Batch sizelearningRate       
+learningRateActor       = 0.0015 ;   % Learning rate of actor 
+learningRateCritic       = 0.015 ;   % Learning rate of critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
-NumStepsAhead      = 50 ;      % Steps to look into future to predict reward
+NumStepsAhead      = 2 ;      % Steps to look into future to predict reward
 DiscountFactor     = 0.99 ;    % Specify importance of future estimates of reward (decay rate)
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_2, agent_2] = trainAgent2Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_2, agent_2] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Third training involves 256 neurons per layer with 2 hidden layers in each the actor and critic, learning rate of 0.005
 %  pitch and moment coefficients of 0.5 and 2.5 respectively, a sample time
 %  of 0.1 seconds, agent is looking 50 steps ahead to maximize reward at
 %  each step with a discount factor of 0.99. Hyperparameter search involves
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-Neurons            = 64 ;     % Number of neurons per layer
-batchsize          = 256 ;     % Batch size
-learningRateActor       = 0.005 ;   % Learning rate of actor 
-learningRateCritic       = 0.005 ;   % Learning rate of critic
+Neurons            = 128 ;      % Number of neurons per layer
+batchsize          = 128 ;     % Batch sizelearningRate       
+learningRateActor       = 0.0001 ;   % Learning rate of actor 
+learningRateCritic       = 0.001 ;   % Learning rate of critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
-NumStepsAhead      = 50 ;      % Steps to look into future to predict reward
+NumStepsAhead      = 2 ;      % Steps to look into future to predict reward
 DiscountFactor     = 0.99 ;    % Specify importance of future estimates of reward (decay rate)
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_3, agent_3] = trainAgent2Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_3, agent_3] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Fourth training involves 64 neurons per layer with 3 hidden layers in each the actor and critic, learning rate of 0.005
 %  pitch and moment coefficients of 0.5 and 2.5 respectively, a sample time
 %  of 0.1 seconds, agent is looking 50 steps ahead to maximize reward at
 %  each step with a discount factor of 0.99. Hyperparameter search involves
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-Neurons            = 128 ;     % Number of neurons per layer
-batchsize          = 64 ;     % Batch size
-learningRateActor       = 0.005 ;   % Learning rate of actor 
-learningRateCritic       = 0.005 ;   % Learning rate of critic
+Neurons            = 128 ;      % Number of neurons per layer
+batchsize          = 128 ;     % Batch sizelearningRate       
+learningRateActor       = 0.002 ;   % Learning rate of actor 
+learningRateCritic       = 0.02 ;   % Learning rate of critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
-NumStepsAhead      = 50 ;      % Steps to look into future to predict reward
+NumStepsAhead      = 2 ;      % Steps to look into future to predict reward
 DiscountFactor     = 0.99 ;    % Specify importance of future estimates of reward (decay rate)
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_4, agent_4] = trainAgent3Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_4, agent_4] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Fifth training involves 128 neurons per layer with 3 hidden layers in each the actor and critic, learning rate of 0.005
 %  pitch and moment coefficients of 0.5 and 2.5 respectively, a sample time
 %  of 0.1 seconds, agent is looking 50 steps ahead to maximize reward at
 %  each step with a discount factor of 0.99. Hyperparameter search involves
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-Neurons            = 128 ;     % Number of neurons per layer
-batchsize          = 128 ;     % Batch size
-learningRateActor       = 0.005 ;   % Learning rate of actor 
-learningRateCritic       = 0.005 ;   % Learning rate of critic
+Neurons            = 128 ;      % Number of neurons per layer
+batchsize          = 128 ;     % Batch sizelearningRate       
+learningRateActor       = 0.00005 ;   % Learning rate of actor 
+learningRateCritic       = 0.0005 ;   % Learning rate of critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
-NumStepsAhead      = 50 ;      % Steps to look into future to predict reward
+NumStepsAhead      = 2 ;      % Steps to look into future to predict reward
 DiscountFactor     = 0.99 ;    % Specify importance of future estimates of reward (decay rate)
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_5, agent_5] = trainAgent3Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_5, agent_5] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Sixth training involves 256 neurons per layer with 3 hidden layers in each the actor and critic, learning rate of 0.005
 %  pitch and moment coefficients of 0.5 and 2.5 respectively, a sample time
 %  of 0.1 seconds, agent is looking 50 steps ahead to maximize reward at
 %  each step with a discount factor of 0.99. Hyperparameter search involves
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-Neurons            = 128 ;     % Number of neurons per layer
-batchsize          = 256 ;     % Batch size
-learningRateActor       = 0.005 ;   % Learning rate of actor 
-learningRateCritic       = 0.005 ;   % Learning rate of critic
+Neurons            = 128 ;      % Number of neurons per layer
+batchsize          = 128 ;     % Batch sizelearningRate      
+learningRateActor       = 0.003 ;   % Learning rate of actor 
+learningRateCritic       = 0.03 ;   % Learning rate of critic
 Cpitch             = 0.5 ;     % Pitch actuation cost coefficient
 Cmoment            = 2.5 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
-NumStepsAhead      = 50 ;      % Steps to look into future to predict reward
+NumStepsAhead      = 2 ;      % Steps to look into future to predict reward
 DiscountFactor     = 0.99 ;    % Specify importance of future estimates of reward (decay rate)
 MaxEpisodes        = 500 ;     % Maximum number of episodes
 MaxSteps           = 300 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_6, agent_6] = trainAgent3Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_6, agent_6] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Plot results
 Ep        = trainingInfo_1.EpisodeIndex ;
 % Average Rewards
@@ -151,7 +150,7 @@ title('Average Reward')
 ylabel('Average Reward')
 
 axis([0 500 -1800 -700])
-legend '64N2H-64' '64N2H-128' '64N2H-256' '128N3H-64' '128N3H-128' '128N3H-256'
+legend '128N3H128-LR1' '128N3H128-LR2' '128N3H128-LR3' '128N3H128-LR4' '128N3H128-LR5' '128N3H128-LR6'
 subplot(2,1,2)
 plot(Ep,-Loss1,Ep,-Loss2,Ep,-Loss3,Ep,-Loss4,Ep,-Loss5,Ep,-Loss6)
 grid on
@@ -159,7 +158,7 @@ title('Critic Loss')
 ylabel('Loss')
 xlabel('Episode Number')
 axis([0 500 500 1500])
-sgtitle('Minibatch Hyperparameter Search')
+sgtitle('Learning Rate Hyperparameter Search')
 
 
 

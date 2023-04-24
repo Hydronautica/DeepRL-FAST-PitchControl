@@ -1,24 +1,25 @@
 function [trainingInfo,agent] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps)
+FAST_InputFileName = '5MW_OC4Semi_WSt_WavesWN.fst';
+TMax               = 500; % seconds
 Cpitch = Cpitch ;
 Cmoment = Cmoment ;
-nObsStates = 5;
+nObsStates = 7;
 obsInfo = rlNumericSpec([nObsStates 1]) ;
 MaxMoment = 100000 ;
 nActStates = 3 ; % 3 Mooring Lines (3 change in lengths)
 actInfo = rlNumericSpec([nActStates 1],"UpperLimit",1,"LowerLimit",-1);
 env = rlSimulinkEnv("FAST_RL_Env", "FAST_RL_Env/controller",obsInfo,actInfo) ;
 env.UseFastRestart = 'off' ;
-actnet = [sequenceInputLayer(nObsStates,"Name","obs"),lstmLayer(Neurons,"Name",'fc1'),reluLayer("Name",'relu1'),lstmLayer(Neurons,"Name",'fc2'),reluLayer("Name",'relu2'),fullyConnectedLayer(nActStates,"Name","act"),tanhLayer("Name","tanh"),scalingLayer("Name","scact",Scale=max(actInfo.UpperLimit))] ;
+actnet = [sequenceInputLayer(nObsStates,"Name","obs"),lstmLayer(Neurons,"Name",'fc1'),fullyConnectedLayer(Neurons,"Name",'fc2'),reluLayer("Name",'relu2'),fullyConnectedLayer(nActStates,"Name","act"),tanhLayer("Name","tanh"),scalingLayer("Name","scact",Scale=max(actInfo.UpperLimit))] ;
 actor = rlDeterministicActorRepresentation(actnet,obsInfo,actInfo,"Observation",'obs','Action','scact') ;
 statePath = [
     sequenceInputLayer( ...
         obsInfo.Dimension(1), ...
         Name="obsPathInputLayer")
     lstmLayer(Neurons)
+    fullyConnectedLayer(Neurons)
     reluLayer
-    lstmLayer(Neurons)
-    reluLayer
-    lstmLayer(Neurons)
+    fullyConnectedLayer(Neurons)
     reluLayer
     fullyConnectedLayer(Neurons,Name="spOutLayer")
     ];
@@ -37,9 +38,9 @@ actionPath = [
 commonPath = [
     additionLayer(2,Name="add")
     reluLayer
-    lstmLayer(Neurons)
+    fullyConnectedLayer(Neurons)
     reluLayer
-    lstmLayer(Neurons)
+    fullyConnectedLayer(Neurons)
     reluLayer
     fullyConnectedLayer(Neurons)
     reluLayer
@@ -66,7 +67,7 @@ agentOpts = rlDDPGAgentOptions(...
                 'MiniBatchSize',batchsize,...
                 'NumStepsToLookAhead',NumStepsAhead,...
                 'ExperienceBufferLength',1e6,...
-                'SequenceLength',5,...
+                'SequenceLength',10,...
                 'DiscountFactor',DiscountFactor);
 agent = rlDDPGAgent(actor,critic,agentOpts) ;
 %agent.UseExplorationPolicy = 1;
@@ -74,9 +75,9 @@ trainOpts = rlTrainingOptions(...
     'MaxEpisodes',MaxEpisodes,...
     'MaxStepsPerEpisode',MaxSteps,...
     'Plots','training-progress',...
-    'StopTrainingCriteria','AverageReward',...
-    'StopTrainingValue',200000,...
-    'ScoreAveragingWindowLength',50,...
+    'StopTrainingCriteria','EpisodeCount',...
+    'StopTrainingValue',1000,...
+    'ScoreAveragingWindowLength',100,...
     'SaveAgentCriteria',"EpisodeCount",...
     'SaveAgentValue',1,Plots="training-progress");
 

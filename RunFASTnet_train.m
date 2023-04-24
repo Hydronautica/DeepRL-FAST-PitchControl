@@ -19,12 +19,11 @@ learningRateCritic      = 0.005 ;   % Learning rate of criticCpitch
 Cpitch             = 0 ;     % Pitch actuation cost coefficient
 Cmoment            = 1 ;     % Moment cost coefficient
 Ts                 = 0.1 ;     % Sampling time (s)
-NumStepsAhead      = 1 ;      % Steps to look into future to predict reward
-DiscountFactor     = 0.99 ;    % Specify importance of future estimates of reward (decay rate)
+SeqLength          = 20  ;         % Number of time samples to incorporate in LSTM cells
 MaxEpisodes        = 1000 ;     % Maximum number of episodes
 MaxSteps           = 1000 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-[trainingInfo_1, agent_1] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
+[trainingInfo_1, agent_1] = trainAgent3Hidden(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,SeqLength,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps) ;
 %% Plot results
 Ep        = trainingInfo_1.EpisodeIndex ;
 % Average Rewards

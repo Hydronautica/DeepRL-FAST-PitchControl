@@ -1,4 +1,4 @@
-function [trainingInfo,agent] = trainFASTnet(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,SeqLength,Ts,MaxEpisodes,MaxSteps)
+function [trainingInfo,agent] = trainFASTnet(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,SeqLength,Ts,ExVar,MaxEpisodes,MaxSteps)
 %% Train FASTnet 
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 % Current implementation is to minimize tower base moments with individual
@@ -30,7 +30,6 @@ commonPath = [
     lstmLayer(Neurons)
     lstmLayer(Neurons)
     lstmLayer(Neurons)
-    reluLayer
     fullyConnectedLayer(1)
     ];
 
@@ -50,8 +49,8 @@ actorNet = [
     lstmLayer(Neurons)
     lstmLayer(Neurons)
     lstmLayer(Neurons)
-    reluLayer
     fullyConnectedLayer(prod(actInfo.Dimension)) 
+    tanhLayer
     ];
 actorNet = dlnetwork(actorNet);
 actor = rlContinuousDeterministicActor(actorNet,obsInfo,actInfo);
@@ -66,7 +65,12 @@ agentOpts = rlDDPGAgentOptions(...
     MiniBatchSize=batchsize, ...
     CriticOptimizerOptions=criticOpts, ...
     ActorOptimizerOptions=actorOpts);
+Var = (actInfo.UpperLimit - actInfo.LowerLimit)*ExVar/sqrt(Ts) ;
+
+agentOpts.NoiseOptions.Variance = Var;
+agentOpts.NoiseOptions.VarianceDecayRate = 1e-6;
 agent = rlDDPGAgent(actor,critic,agentOpts) ;
+agentOpts.NoiseOptions.Variance = 0.6;
 %agent.UseExplorationPolicy = 1;
 trainOpts = rlTrainingOptions(...
     'MaxEpisodes',MaxEpisodes,...

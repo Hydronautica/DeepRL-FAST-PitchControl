@@ -1,4 +1,4 @@
-function [trainingInfo,agent] = trainFASTnet(Neurons,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,SeqLength,Ts,ExVar,MaxEpisodes,MaxSteps)
+function [trainingInfo,agent] = trainFASTnet(Neurons,NLactor,NLcritic,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,SeqLength,Ts,ExVar,MaxEpisodes,MaxSteps)
 %% Train FASTnet 
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 % Current implementation is to minimize tower base moments with individual
@@ -6,6 +6,7 @@ function [trainingInfo,agent] = trainFASTnet(Neurons,batchsize,learningRateActor
 % created by NREL
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 %% Assign required variables:
+rng(0) ;
 FAST_InputFileName = '5MW_OC4Semi_WSt_WavesWN.fst';
 TMax               = 500; % seconds
 Cpitch = Cpitch ;
@@ -14,7 +15,7 @@ Cmoment = Cmoment ;
 nObsStates = 6;
 obsInfo = rlNumericSpec([nObsStates 1]) ;
 nActStates = 3 ; 
-actInfo = rlNumericSpec([nActStates 1],"UpperLimit",1,"LowerLimit",-1);
+actInfo = rlNumericSpec([nActStates 1],"UpperLimit",0.1,"LowerLimit",-0.1);
 env = rlSimulinkEnv("FAST_RL_Env", "FAST_RL_Env/controller",obsInfo,actInfo) ;
 env.UseFastRestart = 'off' ;
 obsPath = sequenceInputLayer(prod(obsInfo.Dimension),Name="netOin");
@@ -24,14 +25,18 @@ actPath = sequenceInputLayer(prod(actInfo.Dimension),Name="netAin");
 %  network, however, it was not determined if this was necessary and
 %  increased computation cost. 
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-
 commonPath = [
-    concatenationLayer(1,2,Name="cat")
-    lstmLayer(Neurons)
-    lstmLayer(Neurons)
-    lstmLayer(Neurons)
-    fullyConnectedLayer(1)
-    ];
+        concatenationLayer(1,2,Name="cat")
+        lstmLayer(64)
+        lstmLayer(64)
+        reluLayer
+        fullyConnectedLayer(Neurons)
+        reluLayer
+        fullyConnectedLayer(Neurons-100)
+        reluLayer
+        fullyConnectedLayer(1)
+        ];
+
 
 % Add paths to layerGraph network
 criticNet = layerGraph(obsPath);
@@ -43,17 +48,26 @@ criticNet = connectLayers(criticNet,"netAin","cat/in2");
 criticNet = dlnetwork(criticNet);
 critic = rlQValueFunction(criticNet,obsInfo,actInfo,...
     ObservationInputNames="netOin",ActionInputNames="netAin");
+critic.UseDevice = "gpu" ;
 %% Actor Net
-actorNet = [
-    sequenceInputLayer(prod(obsInfo.Dimension))
-    lstmLayer(Neurons)
-    lstmLayer(Neurons)
-    lstmLayer(Neurons)
-    fullyConnectedLayer(prod(actInfo.Dimension)) 
-    tanhLayer
-    ];
+    actorNet = [
+        sequenceInputLayer(prod(obsInfo.Dimension))
+        lstmLayer(64)
+        lstmLayer(64)
+        reluLayer
+        fullyConnectedLayer(Neurons)
+        reluLayer
+        fullyConnectedLayer(Neurons-100)
+        reluLayer
+        fullyConnectedLayer(prod(actInfo.Dimension)) 
+        tanhLayer
+        scalingLayer(Scale=max(actInfo.UpperLimit))
+         ];
+
+
 actorNet = dlnetwork(actorNet);
 actor = rlContinuousDeterministicActor(actorNet,obsInfo,actInfo);
+actor.UseDevice = "gpu" ;
 criticOpts = rlOptimizerOptions(LearnRate=learningRateCritic,GradientThreshold=1);
 actorOpts = rlOptimizerOptions(LearnRate=learningRateActor,GradientThreshold=1);
 agentOpts = rlDDPGAgentOptions(...
@@ -65,12 +79,14 @@ agentOpts = rlDDPGAgentOptions(...
     MiniBatchSize=batchsize, ...
     CriticOptimizerOptions=criticOpts, ...
     ActorOptimizerOptions=actorOpts);
-Var = (actInfo.UpperLimit - actInfo.LowerLimit)*ExVar/sqrt(Ts) ;
+Var = ((actInfo.UpperLimit - actInfo.LowerLimit)*ExVar)/sqrt(Ts) ;
 
 agentOpts.NoiseOptions.Variance = Var;
-agentOpts.NoiseOptions.VarianceDecayRate = 1e-6;
+agentOpts.NoiseOptions.MeanAttractionConstant = 0.3;
+agentOpts.NoiseOptions.VarianceDecayRate = 0;
+%agentOpts.NoiseOptions.StandardDeviationMin = 0.01;
 agent = rlDDPGAgent(actor,critic,agentOpts) ;
-agentOpts.NoiseOptions.Variance = 0.6;
+
 %agent.UseExplorationPolicy = 1;
 trainOpts = rlTrainingOptions(...
     'MaxEpisodes',MaxEpisodes,...

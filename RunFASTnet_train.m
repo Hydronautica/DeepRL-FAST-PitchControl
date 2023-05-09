@@ -12,18 +12,18 @@ load NoControlzp01.mat
 %  each step with a discount factor of 0.99. Hyperparameter search involves
 %  500 episodes with the agent having 30 seconds to minimize loads
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
-Neurons            = 400 ;      % Number of neurons per layer
+Neurons            = 500 ;      % Number of neurons per layer
 batchsize          = 64 ;     % Batch size
 NLactor            = 2  ;     % Number of hidden layers in actor
 NLcritic           = 2  ;     % Number of hidden layers in critic
 learningRateActor       = 0.0001 ;   % Learning rate of actor 
 learningRateCritic      = 0.0001 ;   % Learning rate of criticCpitch  
-Cpitch             = 0.01 ;     % Pitch actuation cost coefficient
-Cmoment            = 2 ;     % Moment cost coefficient
-Ts                 = 0.05 ;     % Sampling time (s)
+Cpitch             = 1 ;     % Pitch actuation cost coefficient
+Cmoment            = 0 ;     % Moment cost coefficient
+Ts                 = 0.01 ;     % Sampling time (s)
 SeqLength          = 20 ;         % Number of time samples to incorporate in LSTM cells
 MaxEpisodes        = 2500 ;     % Maximum number of episodes
-MaxSteps           = 600 ;     % Maximum number of time steps per episode
+MaxSteps           = 800 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
 ExVar              = 0.01 ;         % Actor exploration variance (percent/100)
 [trainingInfo_1, agent_1] = trainFASTnet(Neurons,NLactor,NLcritic,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,SeqLength,Ts,ExVar,MaxEpisodes,MaxSteps) ;

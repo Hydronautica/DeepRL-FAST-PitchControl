@@ -6,84 +6,183 @@ function [trainingInfo,agent] = trainFASTnet(Neurons,NLactor,NLcritic,batchsize,
 % created by NREL
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 %% Assign required variables:
-rng(0) ;
+rng(2) ;
 FAST_InputFileName = '5MW_OC4Semi_WSt_WavesWN.fst';
 TMax               = 500; % seconds
 Cpitch = Cpitch ;
 Cmoment = Cmoment ;
 %% Specify environment options
-nObsStates = 6;
+nObsStates = 3;
 obsInfo = rlNumericSpec([nObsStates 1]) ;
 nActStates = 3 ; 
-actInfo = rlNumericSpec([nActStates 1],"UpperLimit",0.1,"LowerLimit",-0.1);
+actInfo = rlNumericSpec([nActStates 1],"UpperLimit",4,"LowerLimit",-4);
 env = rlSimulinkEnv("FAST_RL_Env", "FAST_RL_Env/controller",obsInfo,actInfo) ;
 env.UseFastRestart = 'off' ;
-obsPath = sequenceInputLayer(prod(obsInfo.Dimension),Name="netOin");
-actPath = sequenceInputLayer(prod(actInfo.Dimension),Name="netAin");
+
+% obsPath = sequenceInputLayer(prod(obsInfo.Dimension),Name="netOin");
+% actPath = sequenceInputLayer(prod(actInfo.Dimension),Name="netAin");
 %% Create main critic network
 %  Previous versions included hidden layers before addition of the actor
 %  network, however, it was not determined if this was necessary and
 %  increased computation cost. 
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
+% commonPath = [
+%         concatenationLayer(1,2,Name="cat")
+%         lstmLayer(64)
+%         lstmLayer(64)
+%         reluLayer
+%         fullyConnectedLayer(Neurons)
+%         reluLayer
+%         fullyConnectedLayer(Neurons-100)
+%         reluLayer
+%         fullyConnectedLayer(1)
+%         ];
+% mainPath = [
+%         featureInputLayer(prod(obsInfo.Dimension),Name="obsInLyr")
+%         additionLayer(2,Name="add")
+%         reluLayer
+%         fullyConnectedLayer(Neurons)
+%         reluLayer
+%         fullyConnectedLayer(Neurons-100)
+%         reluLayer
+%         fullyConnectedLayer(1)
+%         ];
+% 
+% actionPath = [
+%     featureInputLayer(prod(actInfo.Dimension),Name="actOutLyr")
+%     % fullyConnectedLayer(Neurons,Name="actOutLyr")
+%     ];
+% criticNet = layerGraph(mainPath);
+% criticNet = addLayers(criticNet,actionPath);    
+% criticNet = connectLayers(criticNet,"actOutLyr","add/in2");
+% % Add paths to layerGraph network
+% criticNet = layerGraph(obsPath);
+% criticNet = addLayers(criticNet, actPath);
+% criticNet = addLayers(criticNet, commonPath);
+% % Connect paths
+% criticNet = connectLayers(criticNet,"netOin","add/in1");
+% criticNet = connectLayers(criticNet,"netAin","add/in2");
+% % criticNet = connectLayers(criticNet,"netOin","cat/in1");
+% % criticNet = connectLayers(criticNet,"netAin","cat/in2");
+% mainPath = [
+%     featureInputLayer(prod(obsInfo.Dimension),Name="obsInLyr")
+%     additionLayer(2,Name="add")
+%     reluLayer
+%     fullyConnectedLayer(Neurons)
+%     reluLayer
+%     fullyConnectedLayer(Neurons-100)
+%     reluLayer
+%     fullyConnectedLayer(1,Name="QValLyr")
+%     ];
+% 
+% % Action path
+% actionPath = [
+%     featureInputLayer(prod(actInfo.Dimension),Name="actInLyr")
+%     fullyConnectedLayer(prod(obsInfo.Dimension),Name="actOutLyr",BiasLearnRateFactor=0)
+%     ];
+% 
+% % Assemble layergraph object
+% criticNet = layerGraph(mainPath);
+% criticNet = addLayers(criticNet,actionPath);    
+% criticNet = connectLayers(criticNet,"actOutLyr","add/in2");
+% criticNet = dlnetwork(criticNet);
+% critic = rlQValueFunction(criticNet,obsInfo,actInfo,...
+%     ObservationInputNames="obsInLyr",ActionInputNames="actInLyr");
+statePath = [
+    featureInputLayer( ...
+        obsInfo.Dimension(1), ...
+        Name="obsPathInputLayer")
+    fullyConnectedLayer(400)
+    reluLayer
+    fullyConnectedLayer(300,Name="spOutLayer")
+    ];
+
+% Define action path
+actionPath = [
+    featureInputLayer( ...
+        actInfo.Dimension(1), ...
+        Name="actPathInputLayer")
+    fullyConnectedLayer(300, ...
+        Name="apOutLayer", ...
+        BiasLearnRateFactor=0)
+    ];
+
+% Define common path
 commonPath = [
-        concatenationLayer(1,2,Name="cat")
-        lstmLayer(64)
-        lstmLayer(64)
-        reluLayer
-        fullyConnectedLayer(Neurons)
-        reluLayer
-        fullyConnectedLayer(Neurons-100)
-        reluLayer
-        fullyConnectedLayer(1)
-        ];
+    additionLayer(2,Name="add")
+    reluLayer
+    fullyConnectedLayer(1)
+    ];
 
-
-% Add paths to layerGraph network
-criticNet = layerGraph(obsPath);
-criticNet = addLayers(criticNet, actPath);
-criticNet = addLayers(criticNet, commonPath);
-% Connect paths
-criticNet = connectLayers(criticNet,"netOin","cat/in1");
-criticNet = connectLayers(criticNet,"netAin","cat/in2");
-criticNet = dlnetwork(criticNet);
-critic = rlQValueFunction(criticNet,obsInfo,actInfo,...
-    ObservationInputNames="netOin",ActionInputNames="netAin");
+% Create layergraph, add layers and connect them
+criticNetwork = layerGraph();
+criticNetwork = addLayers(criticNetwork,statePath);
+criticNetwork = addLayers(criticNetwork,actionPath);
+criticNetwork = addLayers(criticNetwork,commonPath);
+criticNetwork = connectLayers(criticNetwork,"spOutLayer","add/in1");
+criticNetwork = connectLayers(criticNetwork,"apOutLayer","add/in2");
+criticNetwork = dlnetwork(criticNetwork);
+summary(criticNetwork)
+critic = rlQValueFunction(criticNetwork, ...
+    obsInfo,actInfo, ...
+    ObservationInputNames="obsPathInputLayer", ...
+    ActionInputNames="actPathInputLayer");
 critic.UseDevice = "gpu" ;
 %% Actor Net
-    actorNet = [
-        sequenceInputLayer(prod(obsInfo.Dimension))
-        lstmLayer(64)
-        lstmLayer(64)
-        reluLayer
-        fullyConnectedLayer(Neurons)
-        reluLayer
-        fullyConnectedLayer(Neurons-100)
-        reluLayer
-        fullyConnectedLayer(prod(actInfo.Dimension)) 
-        tanhLayer
-        scalingLayer(Scale=max(actInfo.UpperLimit))
-         ];
+    % actorNet = [
+    %     sequenceInputLayer(prod(obsInfo.Dimension))
+    %     lstmLayer(64)
+    %     lstmLayer(64)
+    %     reluLayer
+    %     fullyConnectedLayer(Neurons)
+    %     reluLayer
+    %     fullyConnectedLayer(Neurons-100)
+    %     reluLayer
+    %     fullyConnectedLayer(prod(actInfo.Dimension)) 
+    %     tanhLayer
+    %     scalingLayer(Scale=max(actInfo.UpperLimit))
+    %      ];
+    % actorNet = [
+    %     featureInputLayer(prod(obsInfo.Dimension))
+    %     fullyConnectedLayer(Neurons)
+    %     reluLayer
+    %     fullyConnectedLayer(Neurons-100)
+    %     reluLayer
+    %     fullyConnectedLayer(prod(actInfo.Dimension)) 
+    %     tanhLayer
+    %     scalingLayer(Scale=max(actInfo.UpperLimit))
+    %      ];
+actorNetwork = [
+    featureInputLayer(obsInfo.Dimension(1))
+    fullyConnectedLayer(400)
+    reluLayer
+    fullyConnectedLayer(300)
+    reluLayer
+    fullyConnectedLayer(3)
+    tanhLayer
+    scalingLayer(Scale=max(actInfo.UpperLimit))
+    ];
 
-
-actorNet = dlnetwork(actorNet);
-actor = rlContinuousDeterministicActor(actorNet,obsInfo,actInfo);
+actorNetwork = dlnetwork(actorNetwork);
+summary(actorNetwork)
+actor = rlContinuousDeterministicActor(actorNetwork,obsInfo,actInfo);
 actor.UseDevice = "gpu" ;
 criticOpts = rlOptimizerOptions(LearnRate=learningRateCritic,GradientThreshold=1);
 actorOpts = rlOptimizerOptions(LearnRate=learningRateActor,GradientThreshold=1);
 agentOpts = rlDDPGAgentOptions(...
     SampleTime=Ts,...
     TargetSmoothFactor=1e-3,...
-    ExperienceBufferLength=1e6,...
+    ExperienceBufferLength=1e4,...
     DiscountFactor=0.99,...
-    SequenceLength=SeqLength,...
+    NumStepsToLookAhead=1,...
     MiniBatchSize=batchsize, ...
     CriticOptimizerOptions=criticOpts, ...
     ActorOptimizerOptions=actorOpts);
-Var = ((actInfo.UpperLimit - actInfo.LowerLimit)*ExVar)/sqrt(Ts) ;
+Var = (actInfo.UpperLimit - actInfo.LowerLimit)*ExVar/sqrt(Ts) ;
 
 agentOpts.NoiseOptions.Variance = Var;
-agentOpts.NoiseOptions.MeanAttractionConstant = 0.3;
-agentOpts.NoiseOptions.VarianceDecayRate = 0;
+%agentOpts.NoiseOptions.MeanAttractionConstant = 0.8;
+%agentOpts.NoiseOptions.VarianceDecayRate = 0;
 %agentOpts.NoiseOptions.StandardDeviationMin = 0.01;
 agent = rlDDPGAgent(actor,critic,agentOpts) ;
 
@@ -93,10 +192,10 @@ trainOpts = rlTrainingOptions(...
     'MaxStepsPerEpisode',MaxSteps,...
     'Plots','training-progress',...
     'StopTrainingCriteria','EpisodeCount',...
-    'StopTrainingValue',1000,...
+    'StopTrainingValue',5000,...
     'ScoreAveragingWindowLength',100,...
-    'SaveAgentCriteria',"EpisodeCount",...
-    'SaveAgentValue',250,Plots="training-progress");
+    'SaveAgentCriteria',"EpisodeReward",...
+    'SaveAgentValue',-20,Plots="training-progress");
 trainingInfo = train(agent,env,trainOpts) ;
 %% Important Functions
 %  These will be useful in visualizing control surface

@@ -4,7 +4,7 @@ clc; clear all; close all ;
 % [trainingInfo,agent] = trainAgent2Hidden(Neurons,batchsize,learningRate,Cpitch,Cmoment,Ts,NumStepsAhead,DiscountFactor,MaxEpisodes,MaxSteps)
 %-----------------------------------------------------------------------------------------------------------------------------------------------%
 FAST_InputFileName = '5MW_OC4Semi_WSt_WavesWN.fst';
-TMax               = 500; % seconds
+TMax               = 3600; % seconds
 load NoControlzp01.mat
 %% First training involves 64 neurons per layer with 2 hidden layers in each the actor and critic, learning rate of 0.005
 %  pitch and moment coefficients of 0.5 and 2.5 respectively, a sample time
@@ -22,10 +22,10 @@ Cpitch             = 1 ;     % Pitch actuation cost coefficient
 Cmoment            = 0 ;     % Moment cost coefficient
 Ts                 = 0.01 ;     % Sampling time (s)
 SeqLength          = 20 ;         % Number of time samples to incorporate in LSTM cells
-MaxEpisodes        = 2500 ;     % Maximum number of episodes
-MaxSteps           = 800 ;     % Maximum number of time steps per episode
+MaxEpisodes        = 250 ;     % Maximum number of episodes
+MaxSteps           = 12000 ;     % Maximum number of time steps per episode
 MaxMoment          = 100000 ;  % Moment to normalize observations by
-ExVar              = 0.01 ;         % Actor exploration variance (percent/100)
+ExVar              = 0.001 ;         % Actor exploration variance (percent/100)
 [trainingInfo_1, agent_1] = trainFASTnet(Neurons,NLactor,NLcritic,batchsize,learningRateActor,learningRateCritic,Cpitch,Cmoment,SeqLength,Ts,ExVar,MaxEpisodes,MaxSteps) ;
 %% Plot results
 Ep        = trainingInfo_1.EpisodeIndex ;
